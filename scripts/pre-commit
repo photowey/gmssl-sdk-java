@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#
+# @author weichangjun
+# @version 1.0.0
+# @since 2025/04/04
+#
+
+changed_files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$')
+
+if [ -n "$changed_files" ]; then
+    echo "Running Checkstyle on changed files..."
+    if ! mvn checkstyle:check -Dcheckstyle.includes="$changed_files"; then
+        echo "Checkstyle failed. Showing detailed logs for debugging..."
+        mvn checkstyle:check -Dcheckstyle.includes="$changed_files" -X
+        exit 1
+    fi
+else
+    echo "No Java files changed. Skipping Checkstyle."
+fi
+
+echo "Running Compile..."
+if ! mvn clean -DskipTests compile; then
+    echo "Compile failed. Showing detailed logs for debugging..."
+    mvn clean -DskipTests compile -X
+    exit 1
+fi
+
+echo "All checks passed. Proceeding with commit..."
+exit 0
