@@ -7,6 +7,8 @@
 ## 修改点
 
 - 更友好的 `API` 设计
+  - 新增和重载了部分方法
+
 - 分包管理代码结构
 - "友好"的异常提示
 - 修改 `namespace` (`groupId`) 为 `io.github.photowey`

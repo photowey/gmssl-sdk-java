@@ -84,11 +84,7 @@ public class Sm4 {
     // ----------------------------------------------------------------
 
     public String encrypt(String data) {
-        byte[] dataBytes = data.getBytes();
-        byte[] cipherBytes = new byte[Sm4.BLOCK_SIZE];
-
-        this.encrypt(dataBytes, cipherBytes);
-
+        byte[] cipherBytes = this.encryptBytes(data);
         return Bytes.toHex(cipherBytes);
     }
 
@@ -115,13 +111,19 @@ public class Sm4 {
         }
     }
 
+    public byte[] encryptBytes(String data) {
+        byte[] dataBytes = data.getBytes();
+        byte[] cipherBytes = new byte[Sm4.BLOCK_SIZE];
+
+        this.encrypt(dataBytes, cipherBytes);
+
+        return cipherBytes;
+    }
+
     // ----------------------------------------------------------------
 
     public String decrypt(String encrypted) {
-        byte[] cipherBytes = Bytes.toBytes(encrypted);
-        byte[] decryptedBytes = new byte[cipherBytes.length];
-
-        this.decrypt(cipherBytes, decryptedBytes);
+        byte[] decryptedBytes = this.decryptBytes(encrypted);
 
         return new String(decryptedBytes);
     }
@@ -132,6 +134,15 @@ public class Sm4 {
 
     public void decrypt(byte[] in, int inOffset, byte[] out, int outOffset) {
         this.encrypt(in, inOffset, out, outOffset);
+    }
+
+    public byte[] decryptBytes(String encrypted) {
+        byte[] cipherBytes = Bytes.toBytes(encrypted);
+        byte[] decryptedBytes = new byte[cipherBytes.length];
+
+        this.decrypt(cipherBytes, decryptedBytes);
+
+        return decryptedBytes;
     }
 
     // ----------------------------------------------------------------
