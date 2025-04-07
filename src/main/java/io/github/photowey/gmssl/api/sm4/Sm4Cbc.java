@@ -15,8 +15,11 @@
  */
 package io.github.photowey.gmssl.api.sm4;
 
+import java.util.Arrays;
+
 import io.github.photowey.gmssl.core.constant.GmSSLConstants;
 import io.github.photowey.gmssl.core.exception.GmSSLException;
+import io.github.photowey.gmssl.core.util.Bytes;
 import io.github.photowey.gmssl.jni.GmSSLJNI;
 
 /**
@@ -36,6 +39,9 @@ public class Sm4Cbc {
     private boolean encrypt = true;
     private boolean initialized = false;
 
+    private byte[] key;
+    private byte[] iv;
+
     public Sm4Cbc() {
         this.ctx = GmSSLJNI.sm4_cbc_ctx_new();
         if (this.ctx == 0) {
@@ -45,11 +51,38 @@ public class Sm4Cbc {
         this.initialized = false;
     }
 
+    public Sm4Cbc(byte[] key, byte[] iv) {
+        this(key, iv, true);
+    }
+
+    public Sm4Cbc(byte[] key, byte[] iv, boolean encrypt) {
+        this(key, iv, encrypt, true);
+    }
+
+    public Sm4Cbc(byte[] key, byte[] iv, boolean encrypt, boolean init) {
+        this.ctx = GmSSLJNI.sm4_cbc_ctx_new();
+        if (this.ctx == 0) {
+            throw new GmSSLException("gmssl: Init SM4 cbc ctx failed.");
+
+        }
+        this.initialized = false;
+
+        this.key = key;
+        this.iv = iv;
+        this.encrypt = encrypt;
+
+        this.init(key, iv, encrypt, init);
+    }
+
     public void init(byte[] key, byte[] iv) {
         this.init(key, iv, true);
     }
 
     public void init(byte[] key, byte[] iv, boolean encrypt) {
+        this.init(key, iv, encrypt, true);
+    }
+
+    public void init(byte[] key, byte[] iv, boolean encrypt, boolean init) {
         if (key == null
             || key.length != KEY_SIZE
             || iv == null
@@ -57,10 +90,12 @@ public class Sm4Cbc {
             throw new GmSSLException("gmssl: Invalid SM4 cbc parameters.");
         }
 
-        this.tryInit(key, iv, encrypt);
-
         this.encrypt = encrypt;
-        this.initialized = true;
+
+        if (init) {
+            this.tryInit(key, iv, encrypt);
+            this.initialized = true;
+        }
     }
 
     private void tryInit(byte[] key, byte[] iv, boolean encrypt) {
@@ -75,6 +110,63 @@ public class Sm4Cbc {
         if (GmSSLJNI.sm4_cbc_decrypt_init(this.ctx, key, iv) != 1) {
             throw new GmSSLException("gmssl: SM4 cbc decrypt init failed.");
         }
+    }
+
+    // ----------------------------------------------------------------
+
+    public String encrypt(String data) {
+        byte[] dataBytes = data.getBytes();
+        return this.encrypt(dataBytes);
+    }
+
+    public String encrypt(byte[] dataBytes) {
+        byte[] cipherFinalBytes = this.encryptBytes(dataBytes);
+
+        return Bytes.toHex(cipherFinalBytes);
+    }
+
+    public byte[] encryptBytes(byte[] dataBytes) {
+        byte[] cipherBytes = new byte[dataBytes.length + Sm4Cbc.BLOCK_SIZE];
+
+        this.tryInitIfNecessary();
+
+        int cipherLen = this.update(dataBytes, dataBytes.length, cipherBytes);
+        cipherLen += this.doFinal(cipherBytes, cipherLen);
+
+        return Arrays.copyOfRange(cipherBytes, 0, cipherLen);
+    }
+
+    // ----------------------------------------------------------------
+
+    public String decrypt(String encrypted) {
+        byte[] cipherBytes = Bytes.toBytes(encrypted);
+        return this.decrypt(cipherBytes);
+    }
+
+    public String decrypt(byte[] cipherBytes) {
+        byte[] decryptedBytes = decryptBytes(cipherBytes);
+
+        return new String(decryptedBytes);
+    }
+
+    public byte[] decryptBytes(byte[] cipherBytes) {
+        this.tryInitIfNecessary(false);
+
+        byte[] decrypted = new byte[cipherBytes.length + Sm4Cbc.BLOCK_SIZE];
+        int decryptedOffset = 0;
+        int cipherOffset = 0;
+        int decryptedLen = this.update(
+            cipherBytes, cipherOffset, cipherBytes.length, decrypted, decryptedOffset);
+        decryptedOffset += decryptedLen;
+        decryptedLen += this.doFinal(decrypted, decryptedOffset);
+
+        return Arrays.copyOfRange(decrypted, 0, decryptedLen);
+    }
+
+    // ----------------------------------------------------------------
+
+    public int update(byte[] in, int inLen, byte[] out) {
+        return this.update(in, 0, inLen, out, 0);
     }
 
     public int update(byte[] in, int inOffset, int inLen, byte[] out, int outOffset) {
@@ -154,5 +246,27 @@ public class Sm4Cbc {
 
     private void reset() {
         this.initialized = false;
+    }
+
+    // ----------------------------------------------------------------
+
+    private void tryInitIfNecessary() {
+        this.tryInitIfNecessary(true);
+    }
+
+    private void tryInitIfNecessary(boolean encrypt) {
+        if (!this.initialized) {
+            this.init(this.key, this.iv, encrypt);
+        }
+    }
+
+    // ----------------------------------------------------------------
+
+    public Sm4Cbc copyToEncryptor() {
+        return new Sm4Cbc(this.key, this.iv, true);
+    }
+
+    public Sm4Cbc copyToDecryptor() {
+        return new Sm4Cbc(this.key, this.iv, false);
     }
 }

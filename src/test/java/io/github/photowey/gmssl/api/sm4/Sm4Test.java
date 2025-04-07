@@ -51,7 +51,7 @@ class Sm4Test {
     @Test
     void testEncrypt_v1() {
         String data = "1234567887654321";
-        Sm4 encryptor = this.image.toEncrypt();
+        Sm4 encryptor = this.image.copyToEncryptor();
         String cipherHex = encryptor.encrypt(data);
         Assertions.assertNotNull(cipherHex, "data is empty exception!");
 
@@ -65,7 +65,7 @@ class Sm4Test {
         byte[] dataBytes = data.getBytes();
         byte[] cipherBytes = new byte[Sm4.BLOCK_SIZE];
 
-        Sm4 encryptor = this.image.toEncrypt();
+        Sm4 encryptor = this.image.copyToEncryptor();
         encryptor.encrypt(dataBytes, 0, cipherBytes, 0);
 
         String cipherHex = Bytes.toHex(cipherBytes);
@@ -80,7 +80,7 @@ class Sm4Test {
         byte[] dataBytes = data.getBytes();
         byte[] cipherBytes = new byte[Sm4.BLOCK_SIZE];
 
-        Sm4 encryptor = this.image.toEncrypt();
+        Sm4 encryptor = this.image.copyToEncryptor();
         encryptor.encrypt(dataBytes, 0, cipherBytes, 0);
 
         String cipherHex = Bytes.toHex(cipherBytes);
@@ -96,7 +96,7 @@ class Sm4Test {
     @Test
     void testDecrypt_v1() {
         String encrypted = "4a7dc8fc6f7fb9bac989bbf8a5f194a7";
-        Sm4 decryptor = this.image.toDecrypt();
+        Sm4 decryptor = this.image.copyToDecryptor();
         String decrypted = decryptor.decrypt(encrypted);
 
         Assertions.assertEquals(
@@ -112,7 +112,7 @@ class Sm4Test {
         byte[] cipherBytes = Bytes.toBytes(cipherHex);
         byte[] decryptedBytes = new byte[cipherBytes.length];
 
-        Sm4 decryptor = this.image.toDecrypt();
+        Sm4 decryptor = this.image.copyToDecryptor();
         decryptor.decrypt(cipherBytes, 0, decryptedBytes, 0);
 
         String decrypted = new String(decryptedBytes);
@@ -130,7 +130,7 @@ class Sm4Test {
         byte[] cipherBytes = Bytes.toBytes(cipherHex);
         byte[] decryptedBytes = new byte[cipherBytes.length];
 
-        Sm4 decryptor = this.image.toDecrypt();
+        Sm4 decryptor = this.image.copyToDecryptor();
         decryptor.decrypt(cipherBytes, 0, decryptedBytes, 0);
 
         String decrypted = new String(decryptedBytes);

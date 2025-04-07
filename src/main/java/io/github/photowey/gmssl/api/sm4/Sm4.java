@@ -136,11 +136,11 @@ public class Sm4 {
 
     // ----------------------------------------------------------------
 
-    public Sm4 toEncrypt() {
+    public Sm4 copyToEncryptor() {
         return new Sm4(this.key, true);
     }
 
-    public Sm4 toDecrypt() {
+    public Sm4 copyToDecryptor() {
         return new Sm4(this.key, false);
     }
 }
