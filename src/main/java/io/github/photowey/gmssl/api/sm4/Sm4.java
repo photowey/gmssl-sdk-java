@@ -68,19 +68,19 @@ public class Sm4 {
 
         this.sm4Key = GmSSLJNI.sm4_key_new();
         if (0L == this.sm4Key) {
-            throw new GmSSLException("gmssl: Generate SM4 key failed");
+            throw new GmSSLException("gmssl: Generate SM4 key failed.");
         }
 
         if (encryptMode) {
-            if (GmSSLJNI.sm4_set_encrypt_key(sm4Key, key) != 1) {
-                throw new GmSSLException("gmssl: Set SM4 encrypt key failed");
+            if (GmSSLJNI.sm4_set_encrypt_key(this.sm4Key, key) != 1) {
+                throw new GmSSLException("gmssl: Set SM4 encrypt key failed.");
             }
 
             return;
         }
 
-        if (GmSSLJNI.sm4_set_decrypt_key(sm4Key, key) != 1) {
-            throw new GmSSLException("gmssl: Set SM4 decrypt key failed");
+        if (GmSSLJNI.sm4_set_decrypt_key(this.sm4Key, key) != 1) {
+            throw new GmSSLException("gmssl: Set SM4 decrypt key failed.");
         }
     }
 
@@ -110,17 +110,17 @@ public class Sm4 {
             || inOffset < 0
             || inOffset + BLOCK_SIZE <= 0
             || inOffset + BLOCK_SIZE > in.length) {
-            throw new GmSSLException("gmssl: Invalid input parameters");
+            throw new GmSSLException("gmssl: Invalid input parameters.");
         }
         if (out == null
             || outOffset < 0
             || outOffset + BLOCK_SIZE <= 0
             || outOffset + BLOCK_SIZE > in.length) {
-            throw new GmSSLException("gmssl: Invalid output parameters");
+            throw new GmSSLException("gmssl: Invalid output parameters.");
         }
 
         if (GmSSLJNI.sm4_encrypt(sm4Key, in, inOffset, out, outOffset) != 1) {
-            throw new GmSSLException("gmssl: SM4 encrypt failed");
+            throw new GmSSLException("gmssl: SM4 encrypt failed.");
         }
     }
 

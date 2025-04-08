@@ -121,17 +121,17 @@ public class Sm4Ctr {
             || inLen < 0
             || inOffset + inLen <= 0
             || in.length < inOffset + inLen) {
-            throw new GmSSLException("gmssl: Invalid input parameters");
+            throw new GmSSLException("gmssl: Invalid input parameters.");
         }
         if (out == null
             || outOffset < 0
             || out.length < outOffset) {
-            throw new GmSSLException("gmssl: Invalid output parameters");
+            throw new GmSSLException("gmssl: Invalid output parameters.");
         }
 
         int outLen = GmSSLJNI.sm4_ctr_encrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 ctr encrypt update failed");
+            throw new GmSSLException("gmssl: SM4 ctr encrypt update failed.");
         }
 
         return outLen;
@@ -145,12 +145,12 @@ public class Sm4Ctr {
         if (out == null
             || outOffset < 0
             || out.length < outOffset) {
-            throw new GmSSLException("gmssl: Invalid output parameters");
+            throw new GmSSLException("gmssl: Invalid output parameters.");
         }
 
         int outLen = GmSSLJNI.sm4_ctr_encrypt_finish(this.ctx, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 ctr encrypt finish failed");
+            throw new GmSSLException("gmssl: SM4 ctr encrypt finish failed.");
         }
 
         this.reset();

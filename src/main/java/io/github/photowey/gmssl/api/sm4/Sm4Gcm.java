@@ -120,12 +120,12 @@ public class Sm4Gcm {
             || inLen < 0
             || inOffset + inLen <= 0
             || in.length < inOffset + inLen) {
-            throw new GmSSLException("gmssl: Invalid input parameters");
+            throw new GmSSLException("gmssl: Invalid input parameters.");
         }
         if (out == null
             || outOffset < 0
             || out.length < outOffset) {
-            throw new GmSSLException("gmssl: Invalid output parameters");
+            throw new GmSSLException("gmssl: Invalid output parameters.");
         }
 
 
@@ -137,7 +137,7 @@ public class Sm4Gcm {
             int outLen =
                 GmSSLJNI.sm4_gcm_encrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
             if (outLen < 0) {
-                throw new GmSSLException("gmssl: SM4 gcm encrypt update failed");
+                throw new GmSSLException("gmssl: SM4 gcm encrypt update failed.");
             }
 
             return outLen;
@@ -145,7 +145,7 @@ public class Sm4Gcm {
 
         int outLen = GmSSLJNI.sm4_gcm_decrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 gcm decrypt update failed");
+            throw new GmSSLException("gmssl: SM4 gcm decrypt update failed.");
         }
 
         return outLen;
@@ -159,7 +159,7 @@ public class Sm4Gcm {
         if (out == null
             || outOffset < 0
             || out.length < outOffset) {
-            throw new GmSSLException("gmssl: Invalid output parameters");
+            throw new GmSSLException("gmssl: Invalid output parameters.");
         }
 
         int outLen = this.doFinish(out, outOffset);
@@ -172,7 +172,7 @@ public class Sm4Gcm {
         if (this.encryptMode) {
             int outLen = GmSSLJNI.sm4_gcm_encrypt_finish(this.ctx, out, outOffset);
             if (outLen < 0) {
-                throw new GmSSLException("gmssl: SM4 gcm encrypt finish failed");
+                throw new GmSSLException("gmssl: SM4 gcm encrypt finish failed.");
             }
 
             return outLen;
@@ -180,7 +180,7 @@ public class Sm4Gcm {
 
         int outLen = GmSSLJNI.sm4_gcm_decrypt_finish(this.ctx, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 gcm decrypt finish failed");
+            throw new GmSSLException("gmssl: SM4 gcm decrypt finish failed.");
         }
 
         return outLen;
