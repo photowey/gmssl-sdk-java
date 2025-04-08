@@ -16,6 +16,7 @@
 package io.github.photowey.gmssl.api.sm4;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import io.github.photowey.gmssl.core.util.Bytes;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ import org.junit.jupiter.api.Test;
 @Slf4j
 class Sm4CbcTest {
 
-    private Sm4Cbc image;
+    private Sm4Cbc template;
     private byte[] key;
     private byte[] iv;
 
@@ -52,14 +53,14 @@ class Sm4CbcTest {
             -122, -59, -97, -25
         };
 
-        this.image = new Sm4Cbc(this.key, this.iv, true, false);
+        this.template = new Sm4Cbc(this.key, this.iv, true, false);
     }
 
     @Test
     void testEncrypt_v1() {
         String data = "gmssl";
 
-        Sm4Cbc encryptor = this.image.copyToEncryptor();
+        Sm4Cbc encryptor = this.template.copyToEncryptor();
         String cipherHex = encryptor.encrypt(data);
         Assertions.assertNotNull(cipherHex, "data is empty exception!");
 
@@ -74,7 +75,7 @@ class Sm4CbcTest {
         byte[] plaintext = data.getBytes();
         byte[] ciphertext = new byte[plaintext.length + Sm4Cbc.BLOCK_SIZE];
 
-        Sm4Cbc encryptor = this.image.copyToEncryptor();
+        Sm4Cbc encryptor = this.template.copyToEncryptor();
 
         int cipherLen = encryptor.update(plaintext, 0, plaintext.length, ciphertext, 0);
         cipherLen += encryptor.doFinal(ciphertext, cipherLen);
@@ -91,7 +92,7 @@ class Sm4CbcTest {
     public void testDecrypt_v1() {
         String cipherHex = "ccedec05b742098b33e0fc8c5c006365";
 
-        Sm4Cbc decryptor = this.image.copyToDecryptor();
+        Sm4Cbc decryptor = this.template.copyToDecryptor();
         String plaintextStr = decryptor.decrypt(cipherHex);
 
         Assertions.assertEquals(
@@ -106,9 +107,9 @@ class Sm4CbcTest {
         String cipherHex = "ccedec05b742098b33e0fc8c5c006365";
         byte[] ciphertext = Bytes.toBytes(cipherHex);
 
-        Sm4Cbc decryptor = this.image.copyToDecryptor();
+        Sm4Cbc decryptor = this.template.copyToDecryptor();
 
-        byte[] decrypted = new byte[ciphertext.length + Sm4Cbc.BLOCK_SIZE];
+        byte[] decrypted = new byte[Objects.requireNonNull(ciphertext).length + Sm4Cbc.BLOCK_SIZE];
         int decryptedOffset = 0;
         int decryptedLen;
         int ciphertextOffset = 0;

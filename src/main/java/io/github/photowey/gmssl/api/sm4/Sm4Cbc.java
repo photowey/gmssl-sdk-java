@@ -36,7 +36,7 @@ public class Sm4Cbc {
     public final static int BLOCK_SIZE = GmSSLConstants.SM4.SM4_BLOCK_SIZE;
 
     private long ctx = 0;
-    private boolean encrypt = true;
+    private boolean encryptMode = true;
     private boolean initialized = false;
 
     private byte[] key;
@@ -55,34 +55,45 @@ public class Sm4Cbc {
         this(key, iv, true);
     }
 
-    public Sm4Cbc(byte[] key, byte[] iv, boolean encrypt) {
-        this(key, iv, encrypt, true);
+    public Sm4Cbc(byte[] key, byte[] iv, boolean encryptMode) {
+        this(key, iv, encryptMode, true);
     }
 
-    public Sm4Cbc(byte[] key, byte[] iv, boolean encrypt, boolean init) {
+    public Sm4Cbc(byte[] key, byte[] iv, boolean encryptMode, boolean init) {
         this.ctx = GmSSLJNI.sm4_cbc_ctx_new();
         if (this.ctx == 0) {
             throw new GmSSLException("gmssl: Init SM4 cbc ctx failed.");
-
         }
-        this.initialized = false;
 
+        this.initialized = false;
         this.key = key;
         this.iv = iv;
-        this.encrypt = encrypt;
+        this.encryptMode = encryptMode;
 
-        this.init(key, iv, encrypt, init);
+        this.init(key, iv, encryptMode, init);
     }
+
+    // ----------------------------------------------------------------
+
+    public Sm4Cbc copyToEncryptor() {
+        return new Sm4Cbc(this.key, this.iv, true);
+    }
+
+    public Sm4Cbc copyToDecryptor() {
+        return new Sm4Cbc(this.key, this.iv, false);
+    }
+
+    // ----------------------------------------------------------------
 
     public void init(byte[] key, byte[] iv) {
         this.init(key, iv, true);
     }
 
-    public void init(byte[] key, byte[] iv, boolean encrypt) {
-        this.init(key, iv, encrypt, true);
+    public void init(byte[] key, byte[] iv, boolean encryptMode) {
+        this.init(key, iv, encryptMode, true);
     }
 
-    public void init(byte[] key, byte[] iv, boolean encrypt, boolean init) {
+    public void init(byte[] key, byte[] iv, boolean encryptMode, boolean init) {
         if (key == null
             || key.length != KEY_SIZE
             || iv == null
@@ -90,27 +101,14 @@ public class Sm4Cbc {
             throw new GmSSLException("gmssl: Invalid SM4 cbc parameters.");
         }
 
-        this.encrypt = encrypt;
+        this.encryptMode = encryptMode;
 
         if (init) {
-            this.tryInit(key, iv, encrypt);
+            this.tryInit(key, iv, encryptMode);
             this.initialized = true;
         }
     }
 
-    private void tryInit(byte[] key, byte[] iv, boolean encrypt) {
-        if (encrypt) {
-            if (GmSSLJNI.sm4_cbc_encrypt_init(this.ctx, key, iv) != 1) {
-                throw new GmSSLException("gmssl: SM4 cbc encrypt init failed.");
-            }
-
-            return;
-        }
-
-        if (GmSSLJNI.sm4_cbc_decrypt_init(this.ctx, key, iv) != 1) {
-            throw new GmSSLException("gmssl: SM4 cbc decrypt init failed.");
-        }
-    }
 
     // ----------------------------------------------------------------
 
@@ -144,7 +142,7 @@ public class Sm4Cbc {
     }
 
     public String decrypt(byte[] cipherBytes) {
-        byte[] decryptedBytes = decryptBytes(cipherBytes);
+        byte[] decryptedBytes = this.decryptBytes(cipherBytes);
 
         return new String(decryptedBytes);
     }
@@ -191,7 +189,7 @@ public class Sm4Cbc {
     }
 
     private int doUpdate(byte[] in, int inOffset, int inLen, byte[] out, int outOffset) {
-        if (this.encrypt) {
+        if (this.encryptMode) {
             int outLen =
                 GmSSLJNI.sm4_cbc_encrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
             if (outLen < 0) {
@@ -227,7 +225,7 @@ public class Sm4Cbc {
     }
 
     private int doFinish(byte[] out, int outOffset) {
-        if (this.encrypt) {
+        if (this.encryptMode) {
             int outLen = GmSSLJNI.sm4_cbc_encrypt_finish(this.ctx, out, outOffset);
             if (outLen < 0) {
                 throw new GmSSLException("gmssl: SM4 cbc encrypt finish failed");
@@ -254,19 +252,24 @@ public class Sm4Cbc {
         this.tryInitIfNecessary(true);
     }
 
-    private void tryInitIfNecessary(boolean encrypt) {
+    private void tryInitIfNecessary(boolean encryptMode) {
         if (!this.initialized) {
-            this.init(this.key, this.iv, encrypt);
+            this.init(this.key, this.iv, encryptMode);
         }
     }
 
-    // ----------------------------------------------------------------
+    private void tryInit(byte[] key, byte[] iv, boolean encryptMode) {
+        if (encryptMode) {
+            if (GmSSLJNI.sm4_cbc_encrypt_init(this.ctx, key, iv) != 1) {
+                throw new GmSSLException("gmssl: SM4 cbc encrypt init failed.");
+            }
 
-    public Sm4Cbc copyToEncryptor() {
-        return new Sm4Cbc(this.key, this.iv, true);
+            return;
+        }
+
+        if (GmSSLJNI.sm4_cbc_decrypt_init(this.ctx, key, iv) != 1) {
+            throw new GmSSLException("gmssl: SM4 cbc decrypt init failed.");
+        }
     }
 
-    public Sm4Cbc copyToDecryptor() {
-        return new Sm4Cbc(this.key, this.iv, false);
-    }
 }

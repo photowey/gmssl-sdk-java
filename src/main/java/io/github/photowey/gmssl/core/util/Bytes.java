@@ -16,6 +16,7 @@
 package io.github.photowey.gmssl.core.util;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import io.github.photowey.gmssl.core.thrower.AssertionErrorThrower;
 
@@ -38,28 +39,47 @@ public final class Bytes {
     }
 
     public static String toHex(String input) {
+        if (Objects.isNull(input)) {
+            return null;
+        }
+
         return byteToHex(input.getBytes(StandardCharsets.UTF_8));
     }
 
     public static String toHex(byte[] input) {
+        if (Objects.isNull(input)) {
+            return null;
+        }
+
         return byteToHex(input);
     }
 
     // ----------------------------------------------------------------
 
     public static byte[] toBytes(String hex) {
+        if (Objects.isNull(hex)) {
+            return null;
+        }
+
         return hexToBytes(hex);
     }
 
     public static String toOriginal(String hex) {
-        byte[] bytes = hexToBytes(hex);
+        if (Objects.isNull(hex)) {
+            return null;
+        }
 
+        byte[] bytes = hexToBytes(hex);
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
     // ----------------------------------------------------------------
 
     private static byte[] hexToBytes(String hex) {
+        if (Objects.isNull(hex)) {
+            return null;
+        }
+
         int len = hex.length();
         if (len % 2 != 0) {
             throw new IllegalArgumentException("Hex: invalid hex data length");
@@ -71,10 +91,15 @@ public final class Bytes {
                 (byte) ((Character.digit(hex.charAt(i), 16) << 4)
                     + Character.digit(hex.charAt(i + 1), 16));
         }
+
         return bytes;
     }
 
     private static String byteToHex(byte[] input) {
+        if (Objects.isNull(input)) {
+            return null;
+        }
+
         StringBuilder buf = new StringBuilder();
         for (byte b : input) {
             buf.append(HEX_CHARS[(b >>> 4) & 0x0f]);

@@ -15,6 +15,8 @@
  */
 package io.github.photowey.gmssl.api.sm4;
 
+import java.util.Objects;
+
 import io.github.photowey.gmssl.core.constant.GmSSLConstants;
 import io.github.photowey.gmssl.core.exception.GmSSLException;
 import io.github.photowey.gmssl.core.util.Bytes;
@@ -45,11 +47,11 @@ public class Sm4 {
         this(key, true);
     }
 
-    public Sm4(byte[] key, boolean encrypt) {
-        this(key, encrypt, true);
+    public Sm4(byte[] key, boolean encryptMode) {
+        this(key, encryptMode, true);
     }
 
-    public Sm4(byte[] key, boolean encrypt, boolean init) {
+    public Sm4(byte[] key, boolean encryptMode, boolean init) {
         if (key == null) {
             throw new GmSSLException("gmssl: SM4 key can't bu null.");
         }
@@ -68,7 +70,7 @@ public class Sm4 {
             throw new GmSSLException("gmssl: Generate SM4 key failed");
         }
 
-        if (encrypt) {
+        if (encryptMode) {
             if (GmSSLJNI.sm4_set_encrypt_key(sm4Key, key) != 1) {
                 throw new GmSSLException("gmssl: Set SM4 encrypt key failed");
             }
@@ -79,6 +81,16 @@ public class Sm4 {
         if (GmSSLJNI.sm4_set_decrypt_key(sm4Key, key) != 1) {
             throw new GmSSLException("gmssl: Set SM4 decrypt key failed");
         }
+    }
+
+    // ----------------------------------------------------------------
+
+    public Sm4 copyToEncryptor() {
+        return new Sm4(this.key, true);
+    }
+
+    public Sm4 copyToDecryptor() {
+        return new Sm4(this.key, false);
     }
 
     // ----------------------------------------------------------------
@@ -138,20 +150,10 @@ public class Sm4 {
 
     public byte[] decryptBytes(String encrypted) {
         byte[] cipherBytes = Bytes.toBytes(encrypted);
-        byte[] decryptedBytes = new byte[cipherBytes.length];
+        byte[] decryptedBytes = new byte[Objects.requireNonNull(cipherBytes).length];
 
         this.decrypt(cipherBytes, decryptedBytes);
 
         return decryptedBytes;
-    }
-
-    // ----------------------------------------------------------------
-
-    public Sm4 copyToEncryptor() {
-        return new Sm4(this.key, true);
-    }
-
-    public Sm4 copyToDecryptor() {
-        return new Sm4(this.key, false);
     }
 }

@@ -15,8 +15,11 @@
  */
 package io.github.photowey.gmssl.api.sm4;
 
+import java.util.Arrays;
+
 import io.github.photowey.gmssl.core.constant.GmSSLConstants;
 import io.github.photowey.gmssl.core.exception.GmSSLException;
+import io.github.photowey.gmssl.core.util.Bytes;
 import io.github.photowey.gmssl.jni.GmSSLJNI;
 
 /**
@@ -35,13 +38,29 @@ public class Sm4Ctr {
     private long ctx = 0;
     private boolean initialized = false;
 
+    private byte[] key;
+    private byte[] iv;
+
     public Sm4Ctr() {
         this.ctx = GmSSLJNI.sm4_ctr_ctx_new();
-        if (this.ctx == 0) {
+        if (0L == this.ctx) {
             throw new GmSSLException("gmssl: Init SM4 ctr ctx failed.");
         }
 
         this.initialized = false;
+    }
+
+    public Sm4Ctr(byte[] key, byte[] iv) {
+        this.ctx = GmSSLJNI.sm4_ctr_ctx_new();
+        if (0L == this.ctx) {
+            throw new GmSSLException("gmssl: Init SM4 ctr ctx failed.");
+        }
+
+        this.initialized = false;
+        this.key = key;
+        this.iv = iv;
+
+        this.init(key, iv);
     }
 
     public void init(byte[] key, byte[] iv) {
@@ -52,11 +71,43 @@ public class Sm4Ctr {
             throw new GmSSLException("gmssl: Invalid SM4 ctr parameters.");
         }
 
-        if (GmSSLJNI.sm4_ctr_encrypt_init(this.ctx, key, iv) != 1) {
-            throw new GmSSLException("gmssl: SM4 ctr encrypt init failed.");
-        }
+        this.tryInit(key, iv);
 
         this.initialized = true;
+    }
+
+    // ----------------------------------------------------------------
+
+    public String encrypt(byte[] in, int inLen, byte[] out) {
+        return this.encrypt(in, 0, inLen, out, 0);
+    }
+
+    public String encrypt(byte[] in, int inOffset, int inLen, byte[] out, int outOffset) {
+        int cipherLen = this.update(in, inOffset, inLen, out, outOffset);
+        cipherLen += this.doFinal(out, cipherLen);
+
+        byte[] encryptedBytes = Arrays.copyOfRange(out, 0, cipherLen);
+
+        return Bytes.toHex(encryptedBytes);
+    }
+
+    public String decrypt(byte[] in, int inLen, byte[] out) {
+        return this.decrypt(in, 0, inLen, out, 0);
+    }
+
+    public String decrypt(byte[] in, int inOffset, int inLen, byte[] out, int outOffset) {
+        int plainLen = this.update(in, inOffset, inLen, out, outOffset);
+        plainLen += this.doFinal(out, plainLen);
+
+        byte[] decryptedBytes = Arrays.copyOfRange(out, 0, plainLen);
+
+        return new String(decryptedBytes);
+    }
+
+    // ----------------------------------------------------------------
+
+    public int update(byte[] in, int inLen, byte[] out) {
+        return this.update(in, 0, inLen, out, 0);
     }
 
     public int update(byte[] in, int inOffset, int inLen, byte[] out, int outOffset) {
@@ -105,7 +156,15 @@ public class Sm4Ctr {
         return outLen;
     }
 
+    // ----------------------------------------------------------------
+
     private void reset() {
         this.initialized = false;
+    }
+
+    private void tryInit(byte[] key, byte[] iv) {
+        if (GmSSLJNI.sm4_ctr_encrypt_init(this.ctx, key, iv) != 1) {
+            throw new GmSSLException("gmssl: SM4 ctr encrypt init failed.");
+        }
     }
 }

@@ -10,4 +10,5 @@
     <suppress files=".*[\\/]gmssl[\\/]jni([\\/])?.*" checks="ParameterName"/>
     <suppress files=".*[\\/]gmssl[\\/]jni([\\/])?.*" checks="ParameterNumber"/>
     <suppress files=".*[\\/]gmssl[\\/]jni([\\/])?.*" checks="InterfaceIsType"/>
+    <suppress files=".*[\\/]test([\\/])?.*" checks="LineLength"/>
 </suppressions>
