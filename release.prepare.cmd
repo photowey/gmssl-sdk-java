@@ -1,5 +1,6 @@
 @REM
 @REM Copyright © 2025 the original author or authors.
+@REM Copyright 2014-2023 The GmSSL Project. All Rights Reserved.
 @REM
 @REM Licensed under the Apache License, Version 2.0 (the "License");
 @REM you may not use this file except in compliance with the License.
