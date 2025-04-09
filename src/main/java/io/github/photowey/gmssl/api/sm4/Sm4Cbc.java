@@ -46,7 +46,7 @@ public class Sm4Cbc {
     public Sm4Cbc() {
         this.ctx = GmSSLJNI.sm4_cbc_ctx_new();
         if (this.ctx == 0) {
-            throw new GmSSLException("gmssl: Init SM4 cbc ctx failed.");
+            throw new GmSSLException("gmssl: Init SM4 cbc ctx failure.");
         }
 
         this.initialized = false;
@@ -63,7 +63,7 @@ public class Sm4Cbc {
     public Sm4Cbc(byte[] key, byte[] iv, boolean encryptMode, boolean init) {
         this.ctx = GmSSLJNI.sm4_cbc_ctx_new();
         if (this.ctx == 0) {
-            throw new GmSSLException("gmssl: Init SM4 cbc ctx failed.");
+            throw new GmSSLException("gmssl: Init SM4 cbc ctx failure.");
         }
 
         this.initialized = false;
@@ -193,7 +193,7 @@ public class Sm4Cbc {
             int outLen =
                 GmSSLJNI.sm4_cbc_encrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
             if (outLen < 0) {
-                throw new GmSSLException("gmssl: SM4 cbc encrypt update failed.");
+                throw new GmSSLException("gmssl: SM4 cbc encrypt update failure.");
             }
 
             return outLen;
@@ -201,7 +201,7 @@ public class Sm4Cbc {
 
         int outLen = GmSSLJNI.sm4_cbc_decrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 cbc decrypt update failed.");
+            throw new GmSSLException("gmssl: SM4 cbc decrypt update failure.");
         }
 
         return outLen;
@@ -228,7 +228,7 @@ public class Sm4Cbc {
         if (this.encryptMode) {
             int outLen = GmSSLJNI.sm4_cbc_encrypt_finish(this.ctx, out, outOffset);
             if (outLen < 0) {
-                throw new GmSSLException("gmssl: SM4 cbc encrypt finish failed.");
+                throw new GmSSLException("gmssl: SM4 cbc encrypt finish failure.");
             }
 
             return outLen;
@@ -236,7 +236,7 @@ public class Sm4Cbc {
 
         int outLen = GmSSLJNI.sm4_cbc_decrypt_finish(this.ctx, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 cbc decrypt finish failed.");
+            throw new GmSSLException("gmssl: SM4 cbc decrypt finish failure.");
         }
 
         return outLen;
@@ -257,14 +257,14 @@ public class Sm4Cbc {
     private void tryInit(byte[] key, byte[] iv, boolean encryptMode) {
         if (encryptMode) {
             if (GmSSLJNI.sm4_cbc_encrypt_init(this.ctx, key, iv) != 1) {
-                throw new GmSSLException("gmssl: SM4 cbc encrypt init failed.");
+                throw new GmSSLException("gmssl: SM4 cbc encrypt init failure.");
             }
 
             return;
         }
 
         if (GmSSLJNI.sm4_cbc_decrypt_init(this.ctx, key, iv) != 1) {
-            throw new GmSSLException("gmssl: SM4 cbc decrypt init failed.");
+            throw new GmSSLException("gmssl: SM4 cbc decrypt init failure.");
         }
     }
 

@@ -37,11 +37,11 @@ public class Sm3 implements AutoCloseable {
     public Sm3() {
         this.ctx = GmSSLJNI.sm3_ctx_new();
         if (this.ctx == 0) {
-            throw new GmSSLException("gmssl: New SM3 ctx failed.");
+            throw new GmSSLException("gmssl: New SM3 ctx failure.");
         }
 
         if (GmSSLJNI.sm3_init(this.ctx) != 1) {
-            throw new GmSSLException("gmssl: Init SM3 ctx failed.");
+            throw new GmSSLException("gmssl: Init SM3 ctx failure.");
         }
     }
 
@@ -60,7 +60,7 @@ public class Sm3 implements AutoCloseable {
             throw new GmSSLException("gmssl: Invalid input parameters.");
         }
         if (GmSSLJNI.sm3_update(this.ctx, data, offset, len) != 1) {
-            throw new GmSSLException("gmssl: SM3 update failed.");
+            throw new GmSSLException("gmssl: SM3 update failure.");
         }
     }
 
@@ -81,7 +81,7 @@ public class Sm3 implements AutoCloseable {
     public byte[] digest() {
         byte[] digest = new byte[DIGEST_SIZE];
         if (GmSSLJNI.sm3_finish(this.ctx, digest) != 1) {
-            throw new GmSSLException("gmssl: SM3 finish failed.");
+            throw new GmSSLException("gmssl: SM3 finish failure.");
         }
 
         this.reset();
@@ -93,7 +93,7 @@ public class Sm3 implements AutoCloseable {
 
     public void reset() {
         if (GmSSLJNI.sm3_init(this.ctx) != 1) {
-            throw new GmSSLException("gmssl: Reset SM3 ctx failed.");
+            throw new GmSSLException("gmssl: Reset SM3 ctx failure.");
         }
     }
 

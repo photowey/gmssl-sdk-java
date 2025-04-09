@@ -45,7 +45,7 @@ public class Sm4Ctr {
     public Sm4Ctr() {
         this.ctx = GmSSLJNI.sm4_ctr_ctx_new();
         if (0L == this.ctx) {
-            throw new GmSSLException("gmssl: Init SM4 ctr ctx failed.");
+            throw new GmSSLException("gmssl: Init SM4 ctr ctx failure.");
         }
 
         this.initialized = false;
@@ -54,7 +54,7 @@ public class Sm4Ctr {
     public Sm4Ctr(byte[] key, byte[] iv) {
         this.ctx = GmSSLJNI.sm4_ctr_ctx_new();
         if (0L == this.ctx) {
-            throw new GmSSLException("gmssl: Init SM4 ctr ctx failed.");
+            throw new GmSSLException("gmssl: Init SM4 ctr ctx failure.");
         }
 
         this.initialized = false;
@@ -131,7 +131,7 @@ public class Sm4Ctr {
 
         int outLen = GmSSLJNI.sm4_ctr_encrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 ctr encrypt update failed.");
+            throw new GmSSLException("gmssl: SM4 ctr encrypt update failure.");
         }
 
         return outLen;
@@ -150,7 +150,7 @@ public class Sm4Ctr {
 
         int outLen = GmSSLJNI.sm4_ctr_encrypt_finish(this.ctx, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 ctr encrypt finish failed.");
+            throw new GmSSLException("gmssl: SM4 ctr encrypt finish failure.");
         }
 
         this.reset();
@@ -165,7 +165,7 @@ public class Sm4Ctr {
 
     private void tryInit(byte[] key, byte[] iv) {
         if (GmSSLJNI.sm4_ctr_encrypt_init(this.ctx, key, iv) != 1) {
-            throw new GmSSLException("gmssl: SM4 ctr encrypt init failed.");
+            throw new GmSSLException("gmssl: SM4 ctr encrypt init failure.");
         }
     }
 }

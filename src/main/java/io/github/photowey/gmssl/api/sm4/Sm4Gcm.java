@@ -52,7 +52,7 @@ public class Sm4Gcm {
     public Sm4Gcm() {
         this.ctx = GmSSLJNI.sm4_gcm_ctx_new();
         if (this.ctx == 0) {
-            throw new GmSSLException("gmssl: Init SM4 gcm ctx failed.");
+            throw new GmSSLException("gmssl: Init SM4 gcm ctx failure.");
         }
         this.initialized = false;
     }
@@ -66,7 +66,7 @@ public class Sm4Gcm {
         boolean encryptMode, boolean init) {
         this.ctx = GmSSLJNI.sm4_gcm_ctx_new();
         if (this.ctx == 0) {
-            throw new GmSSLException("gmssl: Init SM4 gcm ctx failed.");
+            throw new GmSSLException("gmssl: Init SM4 gcm ctx failure.");
         }
 
         this.initialized = false;
@@ -137,7 +137,7 @@ public class Sm4Gcm {
             int outLen =
                 GmSSLJNI.sm4_gcm_encrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
             if (outLen < 0) {
-                throw new GmSSLException("gmssl: SM4 gcm encrypt update failed.");
+                throw new GmSSLException("gmssl: SM4 gcm encrypt update failure.");
             }
 
             return outLen;
@@ -145,7 +145,7 @@ public class Sm4Gcm {
 
         int outLen = GmSSLJNI.sm4_gcm_decrypt_update(this.ctx, in, inOffset, inLen, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 gcm decrypt update failed.");
+            throw new GmSSLException("gmssl: SM4 gcm decrypt update failure.");
         }
 
         return outLen;
@@ -172,7 +172,7 @@ public class Sm4Gcm {
         if (this.encryptMode) {
             int outLen = GmSSLJNI.sm4_gcm_encrypt_finish(this.ctx, out, outOffset);
             if (outLen < 0) {
-                throw new GmSSLException("gmssl: SM4 gcm encrypt finish failed.");
+                throw new GmSSLException("gmssl: SM4 gcm encrypt finish failure.");
             }
 
             return outLen;
@@ -180,7 +180,7 @@ public class Sm4Gcm {
 
         int outLen = GmSSLJNI.sm4_gcm_decrypt_finish(this.ctx, out, outOffset);
         if (outLen < 0) {
-            throw new GmSSLException("gmssl: SM4 gcm decrypt finish failed.");
+            throw new GmSSLException("gmssl: SM4 gcm decrypt finish failure.");
         }
 
         return outLen;
@@ -224,14 +224,14 @@ public class Sm4Gcm {
     private void tryInit(byte[] key, byte[] iv, byte[] aad, int tagLen, boolean encryptMode) {
         if (encryptMode) {
             if (GmSSLJNI.sm4_gcm_encrypt_init(this.ctx, key, iv, aad, tagLen) != 1) {
-                throw new GmSSLException("gmssl: SM4 gcm encrypt init failed.");
+                throw new GmSSLException("gmssl: SM4 gcm encrypt init failure.");
             }
 
             return;
         }
 
         if (GmSSLJNI.sm4_gcm_decrypt_init(this.ctx, key, iv, aad, tagLen) != 1) {
-            throw new GmSSLException("gmssl: SM4 gcm decrypt init failed.");
+            throw new GmSSLException("gmssl: SM4 gcm decrypt init failure.");
         }
     }
 }

@@ -42,10 +42,10 @@ public class Sm3Hmac {
         }
         this.ctx = GmSSLJNI.sm3_hmac_ctx_new();
         if (0L == this.ctx) {
-            throw new GmSSLException("gmssl: New SM3 hmac ctx failed.");
+            throw new GmSSLException("gmssl: New SM3 hmac ctx failure.");
         }
         if (GmSSLJNI.sm3_hmac_init(this.ctx, key) != 1) {
-            throw new GmSSLException("gmssl: SM3 hmac init failed.");
+            throw new GmSSLException("gmssl: SM3 hmac init failure.");
         }
 
         this.key = key;
@@ -66,7 +66,7 @@ public class Sm3Hmac {
             throw new GmSSLException("gmssl: Invalid SM3 hmac update parameters.");
         }
         if (GmSSLJNI.sm3_hmac_update(this.ctx, data, offset, len) != 1) {
-            throw new GmSSLException("gmssl: SM3 hmac update failed.");
+            throw new GmSSLException("gmssl: SM3 hmac update failure.");
         }
     }
 
@@ -88,10 +88,10 @@ public class Sm3Hmac {
     public byte[] generate() {
         byte[] mac = new byte[MAC_SIZE];
         if (GmSSLJNI.sm3_hmac_finish(this.ctx, mac) != 1) {
-            throw new GmSSLException("gmssl: SM3 hmac finish failed.");
+            throw new GmSSLException("gmssl: SM3 hmac finish failure.");
         }
         if (GmSSLJNI.sm3_hmac_init(this.ctx, this.key) != 1) {
-            throw new GmSSLException("gmssl: SM3 hmac init failed.");
+            throw new GmSSLException("gmssl: SM3 hmac init failure.");
         }
 
         return mac;
@@ -104,7 +104,7 @@ public class Sm3Hmac {
             throw new GmSSLException("gmssl: SM3 hmac key can't be null.");
         }
         if (GmSSLJNI.sm3_hmac_init(this.ctx, key) != 1) {
-            throw new GmSSLException("gmssl: SM3 hmac init failed.");
+            throw new GmSSLException("gmssl: SM3 hmac init failure.");
         }
 
         this.key = key;

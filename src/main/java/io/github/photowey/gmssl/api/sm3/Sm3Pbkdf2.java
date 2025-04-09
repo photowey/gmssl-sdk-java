@@ -55,7 +55,7 @@ public class Sm3Pbkdf2 {
 
         byte[] key = GmSSLJNI.sm3_pbkdf2(password, salt, iter, keyLen);
         if (key == null) {
-            throw new GmSSLException("gmssl: Derive SM3 pbkdf2 key failed");
+            throw new GmSSLException("gmssl: Derive SM3 pbkdf2 key failure");
         }
 
         return key;

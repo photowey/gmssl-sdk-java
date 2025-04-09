@@ -68,19 +68,19 @@ public class Sm4 {
 
         this.sm4Key = GmSSLJNI.sm4_key_new();
         if (0L == this.sm4Key) {
-            throw new GmSSLException("gmssl: Generate SM4 key failed.");
+            throw new GmSSLException("gmssl: Generate SM4 key failure.");
         }
 
         if (encryptMode) {
             if (GmSSLJNI.sm4_set_encrypt_key(this.sm4Key, key) != 1) {
-                throw new GmSSLException("gmssl: Set SM4 encrypt key failed.");
+                throw new GmSSLException("gmssl: Set SM4 encrypt key failure.");
             }
 
             return;
         }
 
         if (GmSSLJNI.sm4_set_decrypt_key(this.sm4Key, key) != 1) {
-            throw new GmSSLException("gmssl: Set SM4 decrypt key failed.");
+            throw new GmSSLException("gmssl: Set SM4 decrypt key failure.");
         }
     }
 
@@ -120,7 +120,7 @@ public class Sm4 {
         }
 
         if (GmSSLJNI.sm4_encrypt(sm4Key, in, inOffset, out, outOffset) != 1) {
-            throw new GmSSLException("gmssl: SM4 encrypt failed.");
+            throw new GmSSLException("gmssl: SM4 encrypt failure.");
         }
     }
 
